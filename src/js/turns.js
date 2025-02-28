@@ -1,18 +1,9 @@
 // Cargar equipos desde localStorage o inicializar vacío
 export let equipos = JSON.parse(localStorage.getItem("equipos")) || [];
 
-// Asegurar que turnoActual siempre sea válido (iniciar en equipo 1)
-export let turnoActual = localStorage.getItem("turnoActual") !== null ? 
-    Number(localStorage.getItem("turnoActual")) : 0;
-
-// Si el turno guardado es inválido, resetear a 0
-if (turnoActual >= equipos.length || turnoActual < 0) {
-    turnoActual = 0;
-    localStorage.setItem("turnoActual", JSON.stringify(turnoActual));
-}
-
-console.log("📌 Equipos cargados:", equipos);
-console.log("📌 Turno actual cargado:", turnoActual);
+// Forzar turnoActual a 1 si hay equipos
+export let turnoActual = (equipos.length > 1) ? 1 : 0;
+localStorage.setItem("turnoActual", JSON.stringify(turnoActual));
 
 // Actualizar turno en pantalla
 export function actualizarTurno() {
@@ -24,18 +15,18 @@ export function actualizarTurno() {
     console.log(`💾 Turno guardado en localStorage:`, localStorage.getItem("turnoActual"));
 
     if (equipos.length > 0 && turnoElemento) {
-        turnoElemento.innerText = `Turno de: ${equipos[turnoActual].name}`;
+        turnoElemento.innerText = `Turno de: ${equipos[turnoActual]?.name || "Equipo desconocido"}`;
     } else {
         turnoElemento.innerText = "No hay equipos disponibles.";
     }
 }
 
-// Pasar al siguiente turno (alternando entre los equipos)
+// Pasar al siguiente turno (pero mantenerlo en 1 si lo deseas)
 export function siguienteTurno() {
     if (equipos.length > 0) {
-        turnoActual = (turnoActual + 1) % equipos.length; // Alternar turnos
-        localStorage.setItem("turnoActual", JSON.stringify(turnoActual)); // Guardar turno
-        actualizarTurno(); // Actualizar en pantalla
+        turnoActual = 1; // Siempre mantener el turno en 1
+        localStorage.setItem("turnoActual", JSON.stringify(turnoActual));
+        actualizarTurno();
     }
 }
 

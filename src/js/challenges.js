@@ -9,9 +9,14 @@ export const retos = {
         "Expresa una emoción sin hablar, solo con gestos.",
         "Recrea una escena de una película sin usar palabras."
     ],
-    "Descifra": [
+    "Piensa": [
         "Resuelve este anagrama: 'EAGM'",
         "Encuentra la palabra oculta en este acertijo: 'Soy alto cuando soy joven, y corto cuando soy viejo'.",
         "Completa la serie numérica: 2, 4, 8, 16, __."
+    ],
+    "Escribe": [
+        "a'",
+        "a3",
+        "v"
     ]
 };

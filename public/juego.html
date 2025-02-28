@@ -15,20 +15,26 @@
         <div class="carta" onclick="mostrarModal('Crea')">Crea</div>
         <div class="carta" onclick="mostrarModal('Actúa')">Actúa</div>
         <div class="carta" onclick="mostrarModal('Escribe')">Escribe</div>
-        <div class="carta" onclick="mostrarModal('Descifra')">Descifra</div>
+        <div class="carta" onclick="mostrarModal('Piensa')">Piensa</div>
     </div>
     
 
     <!-- Modal -->
-    <div id="modal" class="modal">
-        <div class="modal-contenido">
-            <span class="cerrar" onclick="cerrarModal()">&times;</span>
-            <h2 id="modal-titulo"></h2>
-            <p id="modal-texto"></p>
-            <button id="cumplio-btn">Cumplió</button>
-
+<div id="modal" class="modal">
+    <div class="modal-contenido">
+        <span class="cerrar" onclick="cerrarModal()">&times;</span>
+        <h2 id="modal-titulo"></h2>
+        
+        <!-- Contenedor para mostrar la pista de forma visual -->
+        <div id="pista-container" class="pista-container">
+            <img id="pista-imagen" src="" alt="Imagen de pista" class="pista-imagen" style="display: none;">
+            <p id="modal-texto" class="pista-texto"></p>
         </div>
+
+        <button id="cumplio-btn">Cumplió</button>
     </div>
+</div>
+
 
     <script type="module" src="../src/js/gamelogic.js"></script>
 </body>

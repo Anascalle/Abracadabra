@@ -18,7 +18,7 @@ export function actualizarTurno() {
     }
 }
 
-// Pasar al siguiente turno
+// Pasar al siguiente equipo (pero no cambiar de ronda)
 export function siguienteTurno() {
     if (equipos.length > 0) {
         turnoActual = (turnoActual + 1) % equipos.length;
@@ -30,21 +30,21 @@ export function siguienteTurno() {
     }
 }
 
-// Mostrar el modal con una pista o reto
 export function mostrarModal(categoria, ingredienteNombre = null) {
     let modalTitulo = document.getElementById("modal-titulo");
     let modalTexto = document.getElementById("modal-texto");
     let modal = document.getElementById("modal");
+    let cumplioBtn = document.getElementById("cumplio-btn");
 
-    if (!modalTitulo || !modalTexto || !modal) {
+    if (!modalTitulo || !modalTexto || !modal || !cumplioBtn) {
         console.error("❌ Elementos del modal no encontrados.");
         return;
     }
 
     if (ingredienteNombre) {
         let ingrediente = ingredientes.find(i => i.nombre === ingredienteNombre);
-        if (!ingrediente) {
-            console.warn(`⚠️ Ingrediente "${ingredienteNombre}" no encontrado.`);
+        if (!ingrediente || !ingrediente.pistas || !Array.isArray(ingrediente.pistas)) {
+            console.warn(`⚠️ Ingrediente "${ingredienteNombre}" no encontrado o sin pistas.`);
             return;
         }
 
@@ -54,6 +54,7 @@ export function mostrarModal(categoria, ingredienteNombre = null) {
 
         modalTitulo.innerText = ingredienteNombre;
         modalTexto.innerText = pistaActual;
+       
     } else {
         if (!retos[categoria]) {
             console.warn(`⚠️ Categoría "${categoria}" no encontrada.`);
@@ -63,29 +64,53 @@ export function mostrarModal(categoria, ingredienteNombre = null) {
         let retoAleatorio = retos[categoria][Math.floor(Math.random() * retos[categoria].length)];
         modalTitulo.innerText = categoria;
         modalTexto.innerText = retoAleatorio;
+        
     }
+
+    // El botón "Cumplió" ahora solo avanza la pista, no el turno
+    cumplioBtn.onclick = cumplioReto;
 
     modal.style.display = "block";
 }
 
-// Función cuando un equipo cumple o no un reto
-export function cumplioReto(ingredienteNombre) {
-    let ingrediente = ingredientes.find(i => i.nombre === ingredienteNombre);
-    if (!ingrediente) {
-        console.warn(`⚠️ Ingrediente "${ingredienteNombre}" no encontrado.`);
+// Función cuando un equipo cumple un reto (solo avanza la pista)
+export function cumplioReto() {
+    let equipoActual = equipos[turnoActual];
+
+    if (!equipoActual || !Array.isArray(equipoActual.ingredients) || equipoActual.ingredients.length === 0) {
+        console.warn(`⚠️ El equipo ${equipoActual?.name || "desconocido"} no tiene ingredientes asignados.`);
         return;
     }
 
-    // Avanza a la siguiente pista si hay más disponibles
-    if (progresoPistas[ingredienteNombre] < ingrediente.pistas.length - 1) {
-        progresoPistas[ingredienteNombre]++;
-        console.log(`✅ Mostrando siguiente pista de "${ingredienteNombre}".`);
-    } else {
-        console.log(`✅ Todas las pistas de "${ingredienteNombre}" han sido mostradas.`);
+    let ingrediente = equipoActual.ingredients.find(ing =>
+        ing && ing.nombre && Array.isArray(ing.pistas)
+    );
+
+    if (!ingrediente) {
+        console.warn(`⚠️ Ninguno de los ingredientes de ${equipoActual.name} es válido.`);
+        return;
     }
 
-    siguienteTurno();
+    progresoPistas[ingrediente.nombre] = progresoPistas[ingrediente.nombre] || 0;
+
+    if (progresoPistas[ingrediente.nombre] < ingrediente.pistas.length - 1) {
+        progresoPistas[ingrediente.nombre]++;
+        console.log(`✅ Mostrando siguiente pista de "${ingrediente.nombre}".`);
+    } else {
+        console.log(`✅ Todas las pistas de "${ingrediente.nombre}" han sido mostradas.`);
+    }
+
     cerrarModal();
+
+    // 🔄 Pasar el turno al siguiente equipo automáticamente
+    siguienteTurno();
+}
+
+
+
+// Función para cambiar de ronda después de que todos cumplan
+export function siguienteRonda() {
+    siguienteTurno();
 }
 
 // Cerrar modal
